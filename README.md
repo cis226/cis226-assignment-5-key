@@ -2,7 +2,7 @@
 
 ## Author
 
-
+David Barnes
 
 ## Description
 
@@ -145,8 +145,8 @@ Try to send any dependencies (instances of classes needed inside other classes) 
 
 ## Outside Resources Used
 
-
+None
 
 ## Known Problems, Issues, And/Or Errors in the Program
 
-
+None
