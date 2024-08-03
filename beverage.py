@@ -1,9 +1,5 @@
 """Beverage data models"""
 
-# David Barnes
-# CIS 226
-# 05-28-23
-
 # System Imports.
 import os
 

@@ -1,9 +1,5 @@
 """Program code"""
 
-# David Barnes
-# CIS 226
-# 05-28-23
-
 # Internal imports.
 from beverage import BeverageCollection
 from errors import AlreadyImportedError
