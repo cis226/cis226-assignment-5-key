@@ -1,5 +1,9 @@
 """Program Utilities"""
 
+# David Barnes
+# CIS 226
+# 8-4-2024
+
 # Internal Imports
 from errors import AlreadyImportedError
 
