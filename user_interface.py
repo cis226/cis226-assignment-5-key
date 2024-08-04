@@ -15,7 +15,7 @@ from colors import (
 class UserInterface:
     """UserInterface class"""
 
-    MAX_MENU_CHOICES = 5
+    MAX_MENU_CHOICES = 7
 
     # region public methods
 
@@ -45,10 +45,22 @@ class UserInterface:
         # Return the selection casted to an int
         return int(selection)
 
+    def display_no_database_error(self):
+        """Display error stating that database does not exist"""
+        print()
+        print_error("The database does not exist yet. Please use choice 1. to create it first.")
+
     def get_search_query(self):
         """Get the search query from the user."""
         print()
         print("What would you like to search for?")
+        self.__display_prompt()
+        return input()
+
+    def get_update_search_query(self):
+        """Get the search query from the user."""
+        print()
+        print("What is the id of the Beverage would you like to update?")
         self.__display_prompt()
         return input()
 
@@ -60,6 +72,46 @@ class UserInterface:
             self.__get_str_field("Pack"),
             self.__get_decimal_field("Price"),
             self.__get_bool_field("Active"),
+        )
+
+    def get_updated_item_information(self):
+        """Get updated Item information from the user."""
+
+        # Defaults for each field that might get updated
+        name = None
+        pack = None
+        price = None
+        active = None
+
+        # See about updating the item's name
+        answer = self.__get_bool_field("Name", "Do you want to update the item's name? (y/n)")
+        if answer == "True":
+            name = self.__get_str_field("Name")
+        # See about updating the item's pack
+        answer = self.__get_bool_field("Pack", "Do you want to update the item's pack? (y/n)")
+        if answer == "True":
+            pack = self.__get_str_field("Pack")
+        # See about updating the item's price
+        answer = self.__get_bool_field("Price", "Do you want to update the item's price? (y/n)")
+        if answer == "True":
+            price = self.__get_decimal_field("Price")
+        # See about updating the item's active status
+        answer = self.__get_bool_field("Active", "Do you want to update the item's active status? (y/n)")
+        if answer == "True":
+            active = self.__get_bool_field("Active")
+
+        return (
+            name,
+            pack,
+            price,
+            active,
+        )
+
+    def get_delete_search_query(self):
+        """Get the search query from the user"""
+        return self.__get_str_field(
+            "Id",
+            "What is the Id of the item you would like to Delete?",
         )
 
     def display_import_success(self):
@@ -125,6 +177,42 @@ class UserInterface:
         print()
         print_error("Unable to add. An item with that id already exists.")
 
+    def display_beverage_update_success(self):
+        """Display Item update success"""
+        print()
+        print_success("The Item was successfully updated.")
+
+    def display_beverage_update_error(self):
+        """Display Item update error"""
+        print()
+        print_error("The Item could not be updated.")
+
+    def display_beverage_delete_success(self):
+        """Display Item delete success"""
+        print()
+        print_success("The Item was successfully deleted.")
+
+    def display_beverage_delete_error(self):
+        """Display Item delete error"""
+        print()
+        print_error("The Item could not be deleted.")
+
+    def get_delete_confirmation(self, beverage):
+        """Get a confirmation from the user to delete the beverage"""
+        print()
+        print_success("Item to delete found!")
+        print_warning(self.__get_item_header())
+        print(beverage)
+        print(self.__get_line_separator())
+        print()
+        confirmed = self.__get_bool_field("Delete", message="Are you sure that you want to delete it?")
+        return confirmed == "True"
+
+    def display_beverage_delete_abort(self):
+        """Display beverage delete abort message"""
+        print()
+        print_warning("Beverage delete action aborted!")
+
     # endregion public methods
 
     # region private methods
@@ -138,11 +226,13 @@ class UserInterface:
         print()
         print("What would you like to do?")
         print()
-        print("1. Load Beverage List From CSV")
+        print("1. Create Database and Load From CSV")
         print("2. Print Entire List Of Items")
         print("3. Search For An Item")
         print("4. Add New Item To The List")
-        print("5. Exit Program")
+        print("5. Update existing Item in the List")
+        print("6. Delete existing Item in the List")
+        print("7. Exit Program")
 
     def __display_main_prompt(self):
         """Display the Prompt"""
@@ -198,9 +288,11 @@ class UserInterface:
         # Return the return_value
         return return_value
 
-    def __get_str_field(self, field_name):
+    def __get_str_field(self, field_name, message=None):
         """Get a valid string field from the console."""
-        print(f"What is the new Item's {field_name}?")
+        if message is None:
+            message = f"What is the Item's {field_name}?"
+        print(message)
         self.__display_prompt()
         valid = False
         while not valid:
@@ -210,13 +302,15 @@ class UserInterface:
             else:
                 print_error("You must provide a value.")
                 print()
-                print(f"What is the new Item's {field_name}?")
+                print(message)
                 self.__display_prompt()
         return str(value)
 
-    def __get_decimal_field(self, field_name):
+    def __get_decimal_field(self, field_name, message=None):
         """Get a valid Decimal field from the console."""
-        print(f"What is the new Item's {field_name}?")
+        if message is None:
+            message = f"What is the Item's {field_name}?"
+        print(message)
         self.__display_prompt()
         valid = False
         while not valid:
@@ -226,13 +320,15 @@ class UserInterface:
             except ValueError:
                 print_error("That is not a valid Decimal. Please enter a valid Decimal.")
                 print()
-                print(f"What is the new Item's {field_name}?")
+                print(message)
                 self.__display_prompt()
         return str(value)
 
-    def __get_bool_field(self, fieldname):
+    def __get_bool_field(self, fieldname, message=None):
         """Get a valid Bool field from the console."""
-        print(f"Should the Item be {fieldname}? (y/n)")
+        if message is None:
+            message = f"Should the Item be {fieldname}? (y/n)"
+        print(message)
         self.__display_prompt()
         valid = False
         while not valid:
@@ -243,7 +339,7 @@ class UserInterface:
             else:
                 print_error("That is not a valid Entry.")
                 print()
-                print(f"Should the Item be {fieldname}? (y/n)")
+                print(message)
                 self.__display_prompt()
 
         return str(value)

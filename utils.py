@@ -11,11 +11,17 @@ class CSVProcessor:
         """Constructor"""
         self._has_been_imported = False
 
-    def import_csv(self, beverage_collection, path_to_csv_file):
-        """Import CSV and populate beverage collection"""
+    def import_csv(self, beverage_repository, path_to_csv_file):
+        """Import CSV and populate beverage repository"""
 
-        # If already imported, raise AlreadyImportedError
-        if self._has_been_imported:
+        # If database does not already exist, create the database
+        if not beverage_repository.database_exists:
+            # Create the database
+            beverage_repository.create_database()
+
+        # If the CSV has already imported or records already exist, raise AlreadyImportedError
+        if self._has_been_imported or beverage_repository.data_exists():
+            self._has_been_imported = True  # Prevent db query on future tries.
             raise AlreadyImportedError
 
         # With open of file
@@ -25,13 +31,13 @@ class CSVProcessor:
             # While the line is not None
             while line:
                 # Process the line.
-                self._process_line(line, beverage_collection)
+                self._process_line(line, beverage_repository)
                 # Read next line.
                 line = file.readline().replace("\n", "")
             # All lines read and processed, flip flag to true.
             self._has_been_imported = True
 
-    def _process_line(self, line, beverage_collection):
+    def _process_line(self, line, beverage_repository):
         """Process a line from a CSV file"""
 
         # Split line by comma
@@ -44,5 +50,5 @@ class CSVProcessor:
         price = float(parts[3])
         active = parts[4] == "True"
 
-        # Add a new beverage to the collection with the properties of what was read in.
-        beverage_collection.add(item_id, name, pack, price, active)
+        # Add a new beverage to the repository with the properties of what was read in.
+        beverage_repository.add(item_id, name, pack, price, active)
